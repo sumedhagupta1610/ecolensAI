@@ -1,0 +1,372 @@
+
+/* Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f9f5;
+}
+
+/* Main Dashboard */
+.guest {
+    min-height: 100vh;
+    width: 100%;
+    background: #f5f9f5;
+    color: #263b2b;
+    text-align: left;
+    padding: 0;
+}
+
+/* Navbar */
+.guest-navbar {
+    height: 75px;
+    padding: 0 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.guest-logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #236b36;
+}
+
+.guest-login-btn {
+    padding: 11px 23px;
+    border: 1px solid #2e7d42;
+    border-radius: 25px;
+    background: white;
+    color: #2e7d42;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.guest-login-btn:hover {
+    background: #2e7d42;
+    color: white;
+}
+
+/* Hero Section */
+.guest-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 85px 12%;
+    background: linear-gradient(120deg, #e2f3e5, #f1f8ed);
+}
+
+.hero-tag {
+    display: inline-block;
+    padding: 9px 17px;
+    border-radius: 25px;
+    background: #d0e9d2;
+    color: #28663a;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.guest-hero h1 {
+    max-width: 750px;
+    font-size: clamp(34px, 5vw, 55px);
+    line-height: 1.2;
+    color: #204c2b;
+    margin-bottom: 22px;
+}
+
+.guest-hero h1 span {
+    color: #39934d;
+}
+
+.guest-hero p {
+    max-width: 650px;
+    color: #58705c;
+    font-size: 17px;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.hero-btn {
+    padding: 15px 27px;
+    background: #2e7d42;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #1b5e20;
+    transform: translateY(-3px);
+}
+
+.hero-btn span {
+    margin-left: 8px;
+}
+
+.hero-decoration {
+    position: absolute;
+    right: 13%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 150px;
+    opacity: 0.12;
+}
+
+/* Features Section */
+.guest-features {
+    padding: 75px 8%;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.section-heading span {
+    color: #39934d;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.section-heading h2 {
+    color: #254d2d;
+    font-size: 32px;
+    margin: 13px 0;
+}
+
+.section-heading p {
+    color: #718075;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Feature Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 27px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.card {
+    width: 100%;
+    min-height: 280px;
+    padding: 32px 27px;
+    background: white;
+    border-radius: 17px;
+    border: 1px solid #e4eee5;
+    box-shadow: 0 5px 20px rgba(30, 80, 40, 0.06);
+    transition: 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 13px 28px rgba(30, 80, 40, 0.12);
+    border-color: #a5d6a7;
+}
+
+.feature-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7f5e9;
+    border-radius: 15px;
+    font-size: 32px;
+    margin-bottom: 23px;
+}
+
+.card.blue .feature-icon {
+    background: #e8f1ff;
+}
+
+.card.orange .feature-icon {
+    background: #fff2df;
+}
+
+.card h3 {
+    color: #285b32;
+    font-size: 20px;
+    margin: 0 0 13px;
+    font-weight: 600;
+}
+
+.card p {
+    min-height: 65px;
+    color: #77847a;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.feature-btn {
+    margin-top: 20px;
+    padding: 11px 17px;
+    border: none;
+    border-radius: 7px;
+    background: #e5f3e7;
+    color: #286b38;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.feature-btn:hover {
+    background: #2e7d42;
+    color: white;
+}
+
+/* Guest Login Notice */
+.guest-notice {
+    max-width: 1100px;
+    margin: 0 auto 65px;
+    padding: 28px 35px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    background: #e5f1df;
+    border-radius: 15px;
+}
+
+.notice-icon {
+    font-size: 35px;
+}
+
+.guest-notice div:nth-child(2) {
+    flex: 1;
+}
+
+.guest-notice h3 {
+    color: #285b32;
+    margin-bottom: 8px;
+    font-size: 19px;
+}
+
+.guest-notice p {
+    color: #637568;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.guest-notice button {
+    padding: 12px 22px;
+    background: #2e7d42;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.guest-notice button:hover {
+    background: #1b5e20;
+}
+
+/* Footer */
+.guest-footer {
+    padding: 25px;
+    text-align: center;
+    background: #204c2b;
+    color: #e5f3e7;
+    font-size: 14px;
+}
+
+/* Tablet */
+@media (max-width: 850px) {
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-decoration {
+        right: 5%;
+        font-size: 100px;
+    }
+
+    .guest-notice {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .guest-navbar {
+        padding: 0 5%;
+        height: 68px;
+    }
+
+    .guest-logo {
+        font-size: 21px;
+    }
+
+    .guest-login-btn {
+        padding: 9px 15px;
+        font-size: 12px;
+    }
+
+    .guest-hero {
+        padding: 65px 7%;
+    }
+
+    .guest-hero h1 {
+        font-size: 34px;
+    }
+
+    .guest-hero p {
+        font-size: 15px;
+    }
+
+    .hero-decoration {
+        display: none;
+    }
+
+    .guest-features {
+        padding: 55px 6%;
+    }
+
+    .section-heading h2 {
+        font-size: 25px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        min-height: 250px;
+    }
+
+    .card p {
+        min-height: auto;
+    }
+
+    .guest-notice {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px;
+        margin: 0 6% 45px;
+    }
+
+    .guest-notice button {
+        margin-top: 8px;
+    }
+}

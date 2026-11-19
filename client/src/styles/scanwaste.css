@@ -1,0 +1,509 @@
+
+/* ================================
+   SCAN WASTE PAGE
+================================ */
+
+.scan-page {
+    max-width: 900px;
+    margin: 35px auto;
+    padding: 30px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1e293b;
+    text-align: center;
+    background: #f8faf9;
+    border-radius: 20px;
+}
+
+/* ================================
+   BACK BUTTON
+================================ */
+
+.scan-back-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    position: relative !important;
+    top: auto !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    align-self: flex-start !important;
+    width: fit-content !important;
+
+    padding: 10px 18px !important;
+    margin: 0 0 25px 0 !important;
+    margin-right: auto !important;
+
+    border: none !important;
+    border-radius: 8px;
+    background: #269b68 !important;
+    color: white !important;
+
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.scan-back-button:hover {
+    background: #1d8055 !important;
+    transform: translateX(-3px);
+}
+
+/* ================================
+   PAGE HEADING
+================================ */
+
+.scan-page > h1 {
+    color: #166534;
+    font-size: 32px;
+    font-weight: 750;
+    margin-bottom: 10px;
+}
+
+.scan-description {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+/* ================================
+   MAIN PANELS
+================================ */
+
+.scan-panel,
+.scan-result {
+    background: #ffffff;
+    padding: 30px;
+    margin-top: 25px;
+    border: 1px solid #e2eee5;
+    border-radius: 18px;
+    box-shadow: 0 5px 22px rgba(22, 101, 52, 0.07);
+}
+
+.scan-panel h3,
+.scan-result h3 {
+    color: #245c39;
+    font-weight: 650;
+}
+
+/* ================================
+   BUTTONS
+================================ */
+
+.scan-action-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.scan-button,
+.scan-secondary-button {
+    padding: 12px 21px;
+    margin: 5px;
+    border: none;
+    border-radius: 9px;
+    background: #198754;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.scan-button:hover {
+    background: #146c43;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(25, 135, 84, 0.2);
+}
+
+.scan-secondary-button {
+    background: #334155;
+}
+
+.scan-secondary-button:hover {
+    background: #1e293b;
+    transform: translateY(-2px);
+}
+
+.scan-button:disabled,
+.scan-secondary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ================================
+   CAMERA
+================================ */
+
+.scan-video {
+    width: 100%;
+    max-height: 380px;
+    border-radius: 14px;
+    background: #17231b;
+    object-fit: contain;
+    margin: 15px 0;
+}
+
+.scan-video.hidden {
+    display: none;
+}
+
+.scan-video.visible {
+    display: block;
+}
+
+.scan-hidden-canvas {
+    display: none;
+}
+
+/* ================================
+   FILE INPUT
+================================ */
+
+.scan-file-input {
+    margin: 25px 0;
+    padding: 18px;
+    background: #f3faf5;
+    border: 1px dashed #a7d4b4;
+    border-radius: 12px;
+}
+
+.scan-file-input input {
+    max-width: 100%;
+    color: #475569;
+    font-size: 14px;
+}
+
+/* ================================
+   IMAGE PREVIEW
+================================ */
+
+.scan-selected-image {
+    margin: 25px auto;
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+.scan-selected-image h3 {
+    margin-top: 0;
+}
+
+.scan-preview-image {
+    max-width: 100%;
+    max-height: 320px;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ================================
+   UPLOAD BUTTON
+================================ */
+
+.scan-upload-button {
+    min-width: 220px;
+    margin-top: 10px;
+    background: #166534;
+}
+
+.scan-upload-button:hover {
+    background: #14532d;
+}
+
+/* ================================
+   STATUS MESSAGE
+================================ */
+
+.scan-message {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.scan-message.success {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.scan-message.error {
+    color: #9a3412;
+    background: #fff7ed;
+}
+
+/* ================================
+   RESULT SECTION
+================================ */
+
+.scan-result {
+    text-align: left;
+}
+
+.scan-result > h2:first-child {
+    text-align: center;
+    color: #166534;
+    font-size: 26px;
+    margin-bottom: 25px;
+}
+
+/* DETECTED WASTE */
+
+.scan-detected-box {
+    background: linear-gradient(135deg, #ecfdf3, #dcfce7);
+    padding: 24px;
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    margin-bottom: 25px;
+}
+
+.scan-detected-label {
+    color: #15803d;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 10px;
+}
+
+.scan-detected-name {
+    margin: 0;
+    color: #166534;
+    font-size: 27px;
+    font-weight: 750;
+}
+
+.scan-id {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 0;
+    margin-top: 12px;
+}
+
+/* ================================
+   CONFIDENCE SCORE
+================================ */
+
+.scan-confidence-value {
+    font-size: 30px;
+    margin: 12px 0;
+}
+
+.scan-confidence-value.high {
+    color: #15803d;
+}
+
+.scan-confidence-value.medium {
+    color: #b45309;
+}
+
+.scan-confidence-value.low {
+    color: #dc2626;
+}
+
+.scan-confidence-progress {
+    display: block;
+    width: 100%;
+    height: 13px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #e2e8f0;
+    margin: 15px 0 25px;
+}
+
+.scan-confidence-progress::-webkit-progress-bar {
+    background: #e2e8f0;
+    border-radius: 20px;
+}
+
+.scan-confidence-progress.high::-webkit-progress-value {
+    background: #16a34a;
+    border-radius: 20px;
+}
+
+.scan-confidence-progress.medium::-webkit-progress-value {
+    background: #f59e0b;
+    border-radius: 20px;
+}
+
+.scan-confidence-progress.low::-webkit-progress-value {
+    background: #dc2626;
+    border-radius: 20px;
+}
+
+.scan-confidence-progress.high::-moz-progress-bar {
+    background: #16a34a;
+}
+
+.scan-confidence-progress.medium::-moz-progress-bar {
+    background: #f59e0b;
+}
+
+.scan-confidence-progress.low::-moz-progress-bar {
+    background: #dc2626;
+}
+
+/* ================================
+   WARNING BOX
+================================ */
+
+.scan-warning {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    padding: 20px;
+    border-radius: 13px;
+    margin-top: 22px;
+}
+
+.scan-warning h3 {
+    color: #9a3412;
+    margin-top: 0;
+}
+
+.scan-warning p {
+    line-height: 1.7;
+}
+
+/* ================================
+   RECYCLING & DIY GUIDES
+================================ */
+
+.scan-guide-card {
+    background: #f8fcf9;
+    border: 1px solid #dcebe0;
+    padding: 22px;
+    margin-top: 20px;
+    border-radius: 14px;
+    transition: 0.2s ease;
+}
+
+.scan-guide-card:hover {
+    border-color: #a7d4b4;
+    box-shadow: 0 4px 12px rgba(22, 101, 52, 0.06);
+}
+
+.scan-guide-card h3 {
+    color: #166534;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.scan-guide-list {
+    padding-left: 22px;
+    line-height: 2;
+    color: #475569;
+}
+
+.scan-guide-list li {
+    padding-left: 5px;
+    margin-bottom: 5px;
+}
+
+.scan-diy-item {
+    padding: 12px 5px;
+    color: #475569;
+    line-height: 1.6;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.scan-diy-item:last-child {
+    border-bottom: none;
+}
+
+/* ================================
+   RESULT ACTIONS
+================================ */
+
+.scan-result-actions {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 768px) {
+    .scan-page {
+        margin: 15px;
+        padding: 18px;
+    }
+
+    .scan-page > h1 {
+        font-size: 26px;
+    }
+
+    .scan-panel,
+    .scan-result {
+        padding: 20px;
+    }
+
+    .scan-result > h2:first-child {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scan-page {
+        margin: 8px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .scan-page > h1 {
+        font-size: 23px;
+    }
+
+    .scan-description {
+        font-size: 13px;
+    }
+
+    .scan-panel,
+    .scan-result {
+        padding: 16px;
+    }
+
+    .scan-action-buttons {
+        flex-direction: column;
+    }
+
+    .scan-action-buttons button {
+        width: 100%;
+        margin: 3px 0;
+    }
+
+    .scan-button,
+    .scan-secondary-button {
+        font-size: 13px;
+        padding: 11px 15px;
+    }
+
+    .scan-result-actions {
+        flex-direction: column;
+    }
+
+    .scan-result-actions button {
+        width: 100%;
+        margin: 3px 0;
+    }
+
+    .scan-detected-name {
+        font-size: 23px;
+    }
+}

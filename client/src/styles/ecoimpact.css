@@ -1,0 +1,348 @@
+
+.eco-page {
+    min-height: 100vh;
+    padding: 40px 50px;
+    background: #f5f8f6;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+
+/* Back Button */
+
+.eco-back-button {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    align-self: flex-start !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: fit-content !important;
+
+    margin: 0 0 22px 0 !important;
+    padding: 10px 18px !important;
+
+    border: none !important;
+    border-radius: 8px;
+    background: #269b68 !important;
+    color: white !important;
+
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.eco-back-button:hover {
+    background: #1d8055 !important;
+}
+
+
+/* Header */
+
+.eco-header {
+    margin-bottom: 30px;
+}
+
+.eco-header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    color: #2e7d32;
+}
+
+.eco-header p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+
+/* Period Selection */
+
+.period-section {
+    background: white;
+    padding: 22px 25px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.period-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.period-buttons button {
+    padding: 10px 18px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #555;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.period-buttons button.active {
+    background: #2e7d32;
+    color: white;
+    border-color: #2e7d32;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-selector label {
+    color: #555;
+    font-size: 14px;
+}
+
+.date-selector input {
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    outline: none;
+}
+
+
+/* Impact Cards */
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.impact-card {
+    background: white;
+    padding: 22px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.card-icon {
+    font-size: 30px;
+}
+
+.impact-card p {
+    margin: 0 0 5px;
+    color: #777;
+    font-size: 13px;
+}
+
+.impact-card h2 {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 25px;
+}
+
+
+/* Common Section */
+
+.eco-section,
+.environment-section {
+    background: white;
+    padding: 28px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.eco-section h2,
+.environment-section h2 {
+    margin: 0 0 7px;
+    color: #333;
+}
+
+.section-description {
+    margin: 0 0 25px;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* Waste Breakdown */
+
+.waste-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.waste-item-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.waste-item-top strong {
+    color: #333;
+}
+
+.progress {
+    width: 100%;
+    height: 9px;
+    background: #eeeeee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.progress-fill.plastic {
+    background: #4caf50;
+}
+
+.progress-fill.wet {
+    background: #81c784;
+}
+
+.progress-fill.dry {
+    background: #66bb6a;
+}
+
+.progress-fill.ewaste {
+    background: #388e3c;
+}
+
+
+/* Environmental Impact */
+
+.environment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.environment-card {
+    text-align: center;
+    padding: 22px;
+    background: #f4faf5;
+    border-radius: 12px;
+}
+
+.environment-card span {
+    font-size: 32px;
+}
+
+.environment-card h3 {
+    margin: 10px 0 7px;
+    color: #2e7d32;
+}
+
+.environment-card p {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+
+/* Progress */
+
+.progress-section {
+    background: #e8f5e9;
+    padding: 25px 28px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.progress-section h2 {
+    margin: 0 0 6px;
+    color: #2e7d32;
+}
+
+.progress-section p {
+    margin: 0;
+    color: #666;
+}
+
+.progress-percent {
+    font-size: 30px;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+
+/* Responsive */
+
+@media (max-width: 1000px) {
+
+    .impact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .environment-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .eco-page {
+        padding: 25px;
+    }
+
+    .eco-back-button {
+        margin-bottom: 18px !important;
+    }
+
+    .period-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .date-selector {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .date-selector input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .eco-page {
+        padding: 20px 15px;
+    }
+
+    .eco-back-button {
+        margin-bottom: 15px !important;
+    }
+
+    .eco-header h1 {
+        font-size: 26px;
+    }
+
+}
