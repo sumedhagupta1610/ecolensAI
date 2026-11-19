@@ -1,11 +1,8 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/nearbycenters.css";
 
 const NearbyCenters = () => {
-  const navigate = useNavigate();
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All Centers");
   const [centers, setCenters] = useState([]);
@@ -30,39 +27,39 @@ const NearbyCenters = () => {
   };
 
   // Fetch with timeout
-  const fetchWithTimeout = async (url, timeout = 25000) => {
+  const fetchWithTimeout = async (url, options = {}, timeout = 20000) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
 
     try {
       return await fetch(url, {
+        ...options,
         signal: controller.signal,
         headers: {
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+          ...(options.headers || {}),
+        },
       });
     } finally {
       clearTimeout(timer);
     }
   };
 
-  // Find city using OpenStreetMap Nominatim
+  // Find city using Nominatim
   const findCity = async (cityName) => {
-    const geoUrl = new URL(
-      "https://nominatim.openstreetmap.org/search"
-    );
+    const url = new URL("https://nominatim.openstreetmap.org/search");
 
-    geoUrl.search = new URLSearchParams({
+    url.search = new URLSearchParams({
       q: `${cityName}, India`,
       format: "jsonv2",
       limit: "1",
-      countrycodes: "in"
+      countrycodes: "in",
     }).toString();
 
-    const response = await fetchWithTimeout(geoUrl.toString(), 15000);
+    const response = await fetchWithTimeout(url.toString(), {}, 15000);
 
     if (!response.ok) {
-      throw new Error(`City search failed (${response.status})`);
+      throw new Error(`City search failed (${response.status}).`);
     }
 
     const data = await response.json();
@@ -78,8 +75,187 @@ const NearbyCenters = () => {
     return data[0];
   };
 
-  // Fetch recycling locations from Overpass
-  const fetchCenters = async (bounds) => {
+  // Convert Photon results into a common format
+  const convertPhotonResults = (features) => {
+    return features.map((feature, index) => {
+      const properties = feature.properties || {};
+      const coordinates = feature.geometry?.coordinates;
+
+      if (!coordinates || coordinates.length < 2) return null;
+
+      const [lon, lat] = coordinates;
+
+      return {
+        type: "node",
+        id: properties.osm_id || `photon-${index}`,
+        lat: Number(lat),
+        lon: Number(lon),
+        tags: {
+          name:
+            properties.name ||
+            properties.street ||
+            "Recycling Collection Point",
+          operator: properties.operator || "",
+          amenity:
+            properties.osm_value === "waste_transfer_station"
+              ? "waste_transfer_station"
+              : "recycling",
+          "addr:city": properties.city || "",
+          "addr:street": properties.street || "",
+          "addr:postcode": properties.postcode || "",
+          description: properties.name || "",
+        },
+      };
+    }).filter(Boolean);
+  };
+
+  // Convert Nominatim results into a common format
+  const convertNominatimResults = (places) => {
+    return places.map((place, index) => ({
+      type: "nominatim",
+      id: place.place_id || `nominatim-${index}`,
+      lat: Number(place.lat),
+      lon: Number(place.lon),
+      tags: {
+        name: place.name || place.display_name?.split(",")[0],
+        amenity: place.type === "waste_transfer_station"
+          ? "waste_transfer_station"
+          : "recycling",
+        description: place.display_name || "",
+        "addr:city": place.address?.city || place.address?.town || "",
+        "addr:street": place.address?.road || "",
+      },
+    })).filter(
+      (item) =>
+        Number.isFinite(item.lat) && Number.isFinite(item.lon)
+    );
+  };
+
+  // Try Photon and Nominatim if Overpass is unavailable
+  const fetchFallbackCenters = async (bounds, cityName) => {
+    const [south, north, west, east] = bounds.map(Number);
+
+    const centerLat = (south + north) / 2;
+    const centerLon = (west + east) / 2;
+
+    const fallbackTasks = [];
+
+    // Photon search
+    fallbackTasks.push(
+      (async () => {
+        const url = new URL("https://photon.komoot.io/api/");
+
+        url.search = new URLSearchParams({
+          q: `recycling center ${cityName}`,
+          lat: String(centerLat),
+          lon: String(centerLon),
+          limit: "50",
+          lang: "en",
+        }).toString();
+
+        const response = await fetchWithTimeout(
+          url.toString(),
+          {},
+          15000
+        );
+
+        if (!response.ok) {
+          throw new Error(`Photon HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const features = (data.features || []).filter((feature) => {
+          const coordinates = feature.geometry?.coordinates;
+          if (!coordinates) return false;
+
+          const [lon, lat] = coordinates;
+
+          return (
+            lat >= south &&
+            lat <= north &&
+            lon >= west &&
+            lon <= east
+          );
+        });
+
+        return convertPhotonResults(features);
+      })()
+    );
+
+    // Nominatim search
+    fallbackTasks.push(
+      (async () => {
+        const url = new URL("https://nominatim.openstreetmap.org/search");
+
+        url.search = new URLSearchParams({
+          q: `recycling centre ${cityName}, India`,
+          format: "jsonv2",
+          addressdetails: "1",
+          limit: "30",
+          countrycodes: "in",
+        }).toString();
+
+        const response = await fetchWithTimeout(
+          url.toString(),
+          {},
+          15000
+        );
+
+        if (!response.ok) {
+          throw new Error(`Nominatim HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const places = (data || []).filter((place) => {
+          const lat = Number(place.lat);
+          const lon = Number(place.lon);
+
+          return (
+            lat >= south &&
+            lat <= north &&
+            lon >= west &&
+            lon <= east
+          );
+        });
+
+        return convertNominatimResults(places);
+      })()
+    );
+
+    const responses = await Promise.allSettled(fallbackTasks);
+
+    const results = responses
+      .filter((result) => result.status === "fulfilled")
+      .flatMap((result) => result.value);
+
+    // Remove duplicate coordinates
+    const uniqueResults = [];
+    const seen = new Set();
+
+    results.forEach((item) => {
+      const key = `${item.lat.toFixed(5)}-${item.lon.toFixed(5)}`;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueResults.push(item);
+      }
+    });
+
+    console.log("Fallback locations found:", uniqueResults.length);
+
+    if (uniqueResults.length > 0) {
+      return uniqueResults;
+    }
+
+    throw new Error(
+      "No recycling locations were returned by the available map services."
+    );
+  };
+
+  // Fetch recycling locations from multiple Overpass servers
+  const fetchCenters = async (bounds, cityName) => {
     const [south, north, west, east] = bounds.map(Number);
 
     const query = `
@@ -95,45 +271,53 @@ const NearbyCenters = () => {
     const servers = [
       "https://overpass-api.de/api/interpreter",
       "https://overpass.private.coffee/api/interpreter",
-      "https://overpass.kumi.systems/api/interpreter"
+      "https://overpass.kumi.systems/api/interpreter",
     ];
 
-    let lastError = null;
+    console.log("Trying Overpass servers simultaneously...");
 
-    for (const server of servers) {
-      try {
-        console.log("Trying map server:", server);
+    const requests = servers.map(async (server) => {
+      const response = await fetchWithTimeout(
+        server,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({ data: query }).toString(),
+        },
+        18000
+      );
 
-        const url = `${server}?data=${encodeURIComponent(query)}`;
-
-        const response = await fetchWithTimeout(url, 35000);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (!data || !Array.isArray(data.elements)) {
-          throw new Error("Invalid response from map server.");
-        }
-
-        console.log(
-          `Successfully fetched ${data.elements.length} locations`
-        );
-
-        return data.elements;
-      } catch (error) {
-        console.error(`Map server failed (${server}):`, error);
-        lastError = error;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} from ${server}`);
       }
-    }
 
-    throw new Error(
-      lastError?.name === "AbortError"
-        ? "Map server request timed out. Please try again."
-        : `All map servers failed. ${lastError?.message || ""}`
-    );
+      const data = await response.json();
+
+      if (!Array.isArray(data.elements) || data.elements.length === 0) {
+        throw new Error(`No locations returned by ${server}`);
+      }
+
+      console.log(
+        `Successfully fetched ${data.elements.length} locations from ${server}`
+      );
+
+      return data.elements;
+    });
+
+    try {
+      // Accept only a successful response containing actual locations
+      const elements = await Promise.any(requests);
+      return elements;
+    } catch (error) {
+      console.warn(
+        "Overpass servers unavailable. Trying fallback services:",
+        error
+      );
+
+      return await fetchFallbackCenters(bounds, cityName);
+    }
   };
 
   // Format locations
@@ -156,9 +340,7 @@ const NearbyCenters = () => {
               tags[key] === "yes"
           )
           .map((key) =>
-            key
-              .replace("recycling:", "")
-              .replaceAll("_", " ")
+            key.replace("recycling:", "").replaceAll("_", " ")
           );
 
         const accepted =
@@ -169,7 +351,9 @@ const NearbyCenters = () => {
           accepted,
           tags.name || "",
           tags.operator || "",
-          tags.description || ""
+          tags.description || "",
+          tags.amenity || "",
+          tags.recycling_type || "",
         ].join(" ");
 
         const category =
@@ -183,7 +367,8 @@ const NearbyCenters = () => {
           tags["addr:housenumber"],
           tags["addr:street"],
           tags["addr:suburb"],
-          tags["addr:city"]
+          tags["addr:city"],
+          tags["addr:postcode"],
         ]
           .filter(Boolean)
           .join(", ");
@@ -204,12 +389,12 @@ const NearbyCenters = () => {
             tags.name ||
             tags.operator ||
             "Recycling Collection Point",
-          address: address || cityData.display_name,
+          address: address || tags.description || cityData.display_name,
           accepted_waste_types: accepted,
           category,
           latitude: lat,
           longitude: lon,
-          distance
+          distance,
         };
       })
       .filter(Boolean);
@@ -229,20 +414,23 @@ const NearbyCenters = () => {
     setCenters([]);
 
     try {
-      // Step 1: Find city
       const cityData = await findCity(search.trim());
 
       console.log("City found:", cityData.display_name);
 
-      // Step 2: Fetch locations
-      const elements = await fetchCenters(cityData.boundingbox);
+      const elements = await fetchCenters(
+        cityData.boundingbox,
+        search.trim()
+      );
 
-      // Step 3: Format results
       let results = formatCenters(elements, cityData);
 
-      // Sort by distance when user location is available
       if (userLocation) {
-        results.sort((a, b) => a.distance - b.distance);
+        results.sort((a, b) => {
+          if (a.distance === null) return 1;
+          if (b.distance === null) return -1;
+          return a.distance - b.distance;
+        });
       }
 
       setCenters(results);
@@ -250,14 +438,14 @@ const NearbyCenters = () => {
       setMessage(
         results.length > 0
           ? `Found ${results.length} mapped locations in ${search.trim()}.`
-          : `No mapped recycling centers found in ${search.trim()}. Try another city.`
+          : `No mapped recycling centers found in ${search.trim()}.`
       );
     } catch (error) {
       console.error("Nearby Centers Error:", error);
 
       setMessage(
         error.message ||
-        "Unable to fetch locations. Please try again."
+          "Unable to fetch locations. Please try again."
       );
     } finally {
       setLoading(false);
@@ -277,7 +465,7 @@ const NearbyCenters = () => {
       (position) => {
         const location = {
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          longitude: position.coords.longitude,
         };
 
         setUserLocation(location);
@@ -291,7 +479,7 @@ const NearbyCenters = () => {
                 location.longitude,
                 center.latitude,
                 center.longitude
-              )
+              ),
             }))
             .sort((a, b) => a.distance - b.distance)
         );
@@ -314,7 +502,7 @@ const NearbyCenters = () => {
       {
         enableHighAccuracy: true,
         timeout: 15000,
-        maximumAge: 60000
+        maximumAge: 60000,
       }
     );
   };
@@ -322,21 +510,11 @@ const NearbyCenters = () => {
   // Category filtering
   const filteredCenters = centers.filter(
     (center) =>
-      filter === "All Centers" ||
-      center.category === filter
+      filter === "All Centers" || center.category === filter
   );
 
   return (
     <div className="centers-page">
-
-      {/* Back Button */}
-      <button
-        className="centers-back-button"
-        onClick={() => navigate("/dashboard")}
-      >
-        ← Back
-      </button>
-
       <div className="centers-header">
         <h1>Nearby Recycling Centers 📍</h1>
         <p>
@@ -346,7 +524,6 @@ const NearbyCenters = () => {
 
       {/* Search */}
       <div className="center-search">
-
         <input
           type="text"
           placeholder="Search by city name (e.g. Jaipur, Delhi)..."
@@ -357,20 +534,13 @@ const NearbyCenters = () => {
           }}
         />
 
-        <button
-          onClick={searchCenters}
-          disabled={loading}
-        >
+        <button onClick={searchCenters} disabled={loading}>
           {loading ? "Searching..." : "Search"}
         </button>
 
-        <button
-          className="location-btn"
-          onClick={getMyLocation}
-        >
+        <button className="location-btn" onClick={getMyLocation}>
           📍 Use My Location
         </button>
-
       </div>
 
       {message && (
@@ -383,13 +553,11 @@ const NearbyCenters = () => {
           "All Centers",
           "Recycling",
           "E-Waste",
-          "Composting"
+          "Composting",
         ].map((item) => (
           <button
             key={item}
-            className={
-              filter === item ? "active-filter" : ""
-            }
+            className={filter === item ? "active-filter" : ""}
             onClick={() => setFilter(item)}
           >
             {item}
@@ -403,14 +571,9 @@ const NearbyCenters = () => {
       </p>
 
       <div className="centers-list">
-
         {filteredCenters.length > 0 ? (
           filteredCenters.map((center) => (
-            <div
-              className="center-card"
-              key={center.center_id}
-            >
-
+            <div className="center-card" key={center.center_id}>
               <div className="center-icon">
                 {center.category === "E-Waste"
                   ? "🔋"
@@ -420,7 +583,6 @@ const NearbyCenters = () => {
               </div>
 
               <div className="center-info">
-
                 <h2>{center.center_name}</h2>
 
                 <p className="center-type">
@@ -435,7 +597,6 @@ const NearbyCenters = () => {
                     ? `${center.distance.toFixed(2)} km away`
                     : "Distance unavailable"}
                 </p>
-
               </div>
 
               <button
@@ -444,16 +605,14 @@ const NearbyCenters = () => {
               >
                 View Details
               </button>
-
             </div>
           ))
         ) : (
           <p>
-            No centers to display. Search for a city to find
-            mapped locations.
+            No centers to display. Search for a city to find mapped
+            locations.
           </p>
         )}
-
       </div>
 
       <p className="osm-credit">
@@ -466,12 +625,10 @@ const NearbyCenters = () => {
           className="center-modal"
           onClick={() => setSelectedCenter(null)}
         >
-
           <div
             className="center-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-
             <button
               className="modal-close"
               onClick={() => setSelectedCenter(null)}
@@ -508,12 +665,9 @@ const NearbyCenters = () => {
             >
               View on Map ↗
             </a>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 };
